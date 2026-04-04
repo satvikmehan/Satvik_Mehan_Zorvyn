@@ -1,0 +1,77 @@
+# 🔹 Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 🔹 Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# 🔹 Environment variables
+.env
+.env.*
+*.env
+
+# 🔹 Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+
+# 🔹 Static & media (optional)
+staticfiles/
+media/
+
+# 🔹 Migrations (optional - depends on team)
+**/migrations/*
+!**/migrations/__init__.py
+
+# 🔹 IDE / Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# 🔹 OS files
+.DS_Store
+Thumbs.db
+
+# 🔹 Test / coverage
+.coverage
+htmlcov/
+.tox/
+.nox/
+pytest_cache/
+
+# 🔹 Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 🔹 Logs
+*.log
+
+# 🔹 Node (if frontend inside same repo)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🔹 Docker (optional)
+docker-compose.override.yml
+
+# 🔹 Secrets / keys
+*.pem
+*.key
+
+# 🔹 Temporary files
+*.tmp
+*.bak
+*.swp
