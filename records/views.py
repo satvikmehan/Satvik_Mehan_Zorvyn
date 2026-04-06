@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from users.permissions import RecordPermission
 from .models import Record
@@ -10,55 +11,96 @@ from .services import get_filtered_records
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([RecordPermission])
+@permission_classes([IsAuthenticated, RecordPermission])
 def records_list(request):
 
     # GET
     if request.method == 'GET':
-        records = get_filtered_records(request.user, request)
+        try:
+            records = get_filtered_records(request.user, request)
 
-        paginator = PageNumberPagination()
-        page = paginator.paginate_queryset(records, request)
+            paginator = PageNumberPagination()
+            page = paginator.paginate_queryset(records, request)
 
-        serializer = RecordSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+            serializer = RecordSerializer(page, many=True)
+
+            return paginator.get_paginated_response({
+                "message": "Records fetched successfully",
+                "data": serializer.data
+            })
+
+        except Exception as e:
+            return Response({
+                "error": "Failed to fetch records",
+                "details": str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     # POST
     if request.method == 'POST':
         serializer = RecordSerializer(data=request.data, context={'request': request})
 
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=400)
-    
+            return Response({
+                "message": "Record created successfully",
+                "data": serializer.data
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({
+                "error": "Failed to create record",
+                "details": str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([RecordPermission])
+@permission_classes([IsAuthenticated, RecordPermission])
 def record_detail(request, pk):
 
     try:
         record = Record.objects.get(pk=pk, user=request.user)
     except Record.DoesNotExist:
-        return Response({"detail": "Record not found"}, status=404)
+        return Response({
+            "error": "Record not found"
+        }, status=status.HTTP_404_NOT_FOUND)
 
     # GET
     if request.method == 'GET':
         serializer = RecordSerializer(record)
-        return Response(serializer.data)
+        return Response({
+            "message": "Record fetched successfully",
+            "data": serializer.data
+        })
 
     # PUT
     if request.method == 'PUT':
-        serializer = RecordSerializer(record, data=request.data, partial=True, context={'request': request})
+        serializer = RecordSerializer(
+            record,
+            data=request.data,
+            partial=True,
+            context={'request': request}
+        )
 
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
 
-        return Response(serializer.errors, status=400)
+            return Response({
+                "message": "Record updated successfully",
+                "data": serializer.data
+            })
+
+        except Exception as e:
+            return Response({
+                "error": "Update failed",
+                "details": str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE
     if request.method == 'DELETE':
         record.delete()
-        return Response(status=204)
+        return Response({
+            "message": "Record deleted successfully"
+        }, status=status.HTTP_204_NO_CONTENT)

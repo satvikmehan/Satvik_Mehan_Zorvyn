@@ -13,7 +13,14 @@ class IsAnalyst(BasePermission):
 
 class IsViewer(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role in ['admin', 'analyst', 'viewer']
+
+        if not request.user.is_authenticated:
+            return False
+
+        if not request.user.is_active:
+            return False
+
+        return request.user.role in ['viewer', 'analyst', 'admin']
 
 
 class RecordPermission(BasePermission):
@@ -22,13 +29,22 @@ class RecordPermission(BasePermission):
     """
 
     def has_permission(self, request, view):
+        user = request.user
+
+        # Not logged in
+        if not user or not user.is_authenticated:
+            return False
+        
+        #Inactive user
+        if not user.is_active:
+            return False
 
         # Read-only methods (GET, HEAD, OPTIONS)
         if request.method in SAFE_METHODS:
-            return request.user.role in ['admin', 'analyst', 'viewer']
+            return user.role in ['admin', 'analyst', 'viewer']
 
         # Write operations
         if request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
-            return request.user.role == 'admin'
+            return user.role == 'admin'
 
         return False

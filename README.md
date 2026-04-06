@@ -1,116 +1,226 @@
-# 💰 Finance Dashboard Backend
+# 💰 Finance Dashboard Backend (Django + DRF)
 
 ## 📌 Overview
 
-This project is a backend system for managing financial records with role-based access control and analytics.
+This project is a backend system for a finance dashboard that allows users to manage financial records, view analytics, and interact with data based on their roles.
 
-It supports user authentication, CRUD operations on financial records, and dashboard insights such as total income, expenses, and trends.
-
----
-
-## 🚀 Tech Stack
-
-* Python
-* Django
-* Django REST Framework
-* SQLite
-* JWT Authentication
+It is built using **Django** and **Django REST Framework**, with a focus on clean architecture, role-based access control, and scalable API design.
 
 ---
 
-## 🔐 Features
+## 🚀 Features
 
-### 👤 User Management
+### 👤 User & Role Management
 
-* Signup & Login
-* Role-based access (Viewer, Analyst, Admin)
+* User registration (default role: **viewer**)
+* Role-based access control:
 
-### 💰 Financial Records
+  * **Viewer** → Read-only access
+  * **Analyst** → Read + analytics access
+  * **Admin** → Full CRUD access
 
-* Create, Read, Update, Delete records
-* Filter by category, type, date
-* Pagination support
+---
+
+### 💵 Financial Records Management
+
+* Create, read, update, delete records
+* Fields:
+
+  * Amount
+  * Type (income / expense)
+  * Category
+  * Date
+  * Notes
+* Filtering support:
+
+  * By type
+  * By category
+  * By date
+
+---
 
 ### 📊 Dashboard APIs
 
 * Total income
 * Total expenses
 * Net balance
-* Category-wise summary
+* Category-wise breakdown
 * Monthly trends
 
-### 🔒 Access Control
+---
 
-* Viewer → read only
-* Analyst → read + analytics
-* Admin → full access
+### 🔐 Authentication & Security
+
+* JWT-based authentication
+* Protected APIs using token
+* Role-based permissions
+* Secure password hashing
 
 ---
 
-## 🔗 API Endpoints
+### ⚙️ Additional Features
 
-### Auth
-
-* POST /signup/
-* POST /login/
-
-### Records
-
-* GET /records/
-* POST /records/
-* PUT /records/:id/
-* DELETE /records/:id/
-
-### Dashboard
-
-* GET /dashboard/summary/
-* GET /dashboard/category/
-* GET /dashboard/trends/
+* Pagination for records
+* Service layer for business logic
+* Clean error handling
+* Structured API responses
 
 ---
 
-## ⚙️ Setup Instructions
+## 🏗️ Tech Stack
+
+* **Backend**: Django, Django REST Framework
+* **Database**: SQLite
+* **Authentication**: JWT (SimpleJWT)
+
+---
+
+## 📂 Project Structure
+
+```
+finance-dashboard/
+│
+├── users/        # user model, auth, permissions
+├── records/      # financial records APIs
+├── dashboard/    # analytics & summary APIs
+│
+├── manage.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## ⚡ Setup Instructions
+
+### 1️⃣ Clone Repository
 
 ```bash
-git clone <repo>
-cd finance-backend
+git clone <your-repo-link>
+cd finance-dashboard
+```
 
+---
+
+### 2️⃣ Create Virtual Environment
+
+```bash
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate   # Windows
+```
 
+---
+
+### 3️⃣ Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
+---
+
+### 4️⃣ Run Migrations
+
+```bash
+python manage.py makemigrations
 python manage.py migrate
+```
+
+---
+
+### 5️⃣ Create Admin User
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+### 6️⃣ Run Server
+
+```bash
 python manage.py runserver
 ```
 
 ---
 
-## 🧠 Key Concepts Implemented
+## 🔑 Authentication Flow
 
-* REST API design
-* JWT Authentication
-* Role-based access control
-* Database relationships
-* Aggregation queries
-* Pagination & filtering
+### Signup
+
+```
+POST /signup/
+```
+
+### Login (Get Token)
+
+```
+POST /api/token/
+```
+
+### Use Token
+
+```
+Authorization: Bearer <access_token>
+```
 
 ---
 
-## 📌 Assumptions
+## 📡 API Endpoints
 
-* Each user can only access their own records
-* Roles define permissions strictly
-* SQLite used for simplicity
+| Endpoint               | Method         | Description         |
+| ---------------------- | -------------- | ------------------- |
+| `/signup/`             | POST           | Register user       |
+| `/api/token/`          | POST           | Login (JWT)         |
+| `/records/`            | GET/POST       | List/Create records |
+| `/records/<id>/`       | GET/PUT/DELETE | Record details      |
+| `/dashboard/summary/`  | GET            | Overall summary     |
+| `/dashboard/category/` | GET            | Category breakdown  |
+| `/dashboard/trends/`   | GET            | Monthly trends      |
 
 ---
 
-## 🌟 Improvements (Future Scope)
+## 🛡️ Access Control
 
-* Deploy to cloud (AWS / Render)
-* Add caching (Redis)
-* Advanced analytics
-* Unit testing
+| Role    | Permissions      |
+| ------- | ---------------- |
+| Viewer  | Read-only        |
+| Analyst | Read + dashboard |
+| Admin   | Full access      |
+
+---
+
+## 🧪 Testing
+
+The APIs were tested using **Thunder Client**.
+
+Test scenarios include:
+
+* Authentication (valid/invalid token)
+* Role-based restrictions
+* CRUD operations
+* Filtering and pagination
+* Dashboard analytics
+
+---
+
+## 🧠 Design Decisions
+
+* Used **service layer** to separate business logic from views
+* Implemented **custom permissions** for role-based access
+* Default role set to **viewer** to prevent privilege escalation
+* Structured responses for consistency
+
+---
+
+## 📌 Conclusion
+
+This project demonstrates:
+
+* Clean backend architecture
+* Secure authentication & authorization
+* Proper API design
+* Real-world backend development practices
 
 ---
 

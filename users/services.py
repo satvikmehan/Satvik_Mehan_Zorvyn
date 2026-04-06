@@ -1,15 +1,15 @@
 from .models import User
 
-
 def create_user(validated_data):
-    """
-    Handles user creation logic safely
-    """
+    password = validated_data.pop('password')
 
-    # Force safe role
-    validated_data['role'] = 'viewer'
+    user = User(
+        username=validated_data.get('username'),
+        email=validated_data.get('email')
+    )
 
-    # Create user with hashed password
-    user = User.objects.create_user(**validated_data)
+    user.role = 'viewer'   # default role
+    user.set_password(password)   # 🔥 hash password
 
+    user.save()
     return user
