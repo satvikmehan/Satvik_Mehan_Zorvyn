@@ -1,27 +1,26 @@
 from django.contrib import admin
-from django.urls import path
-from users.views import hello
-from users.views import signup
-from rest_framework_simplejwt.views import TokenObtainPairView
-from records.views import records_list, record_detail
-from dashboard.views import summary, category_summary, monthly_trends
+from django.urls import path, include
+from django.http import JsonResponse
+
+def api_root(request):
+    return JsonResponse({
+        "message": "Finance Dashboard API",
+        "endpoints": {
+            "signup": "/signup/",
+            "login": "/login/",
+            "records": "/records/",
+            "dashboard_summary": "/dashboard/summary/",
+            "dashboard_category": "/dashboard/category/",
+            "dashboard_trends": "/dashboard/trends/",
+        }
+    })
 
 urlpatterns = [
-    #test
-    path('hello/', hello),
-    path('', hello),
-
-    #Auth
     path('admin/', admin.site.urls),
-    path('signup/', signup),
-    path('login/', TokenObtainPairView.as_view()),
 
-    #Record
-    path('records/', records_list),
-    path('records/<int:pk>/', record_detail),
+    path('', api_root),
 
-    #Dashboard
-    path('dashboard/summary/', summary),
-    path('dashboard/category/', category_summary),
-    path('dashboard/trends/', monthly_trends),
+    path('', include('users.urls')),
+    path('records/', include('records.urls')),
+    path('dashboard/', include('dashboard.urls')),
 ]

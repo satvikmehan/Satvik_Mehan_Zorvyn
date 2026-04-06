@@ -13,6 +13,6 @@ def signup(request):
     
     if serializer.is_valid():
         serializer.save()
-        return Response({"message": "User created successfully"}, status=201)
+        return Response({"message": "User created successfully","user": serializer.data},status=status.HTTP_201_CREATED)
     
-    return Response(serializer.errors, status=400)
+    return Response({"errors": serializer.errors},status=status.HTTP_400_BAD_REQUEST)
