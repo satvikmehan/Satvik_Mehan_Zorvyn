@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from users.permissions import RecordPermission
 from .models import Record
@@ -29,7 +30,7 @@ def records_list(request):
                 "data": serializer.data
             })
 
-        except Exception as e:
+        except Exception as e:   # ✅ acceptable here (query issues)
             return Response({
                 "error": "Failed to fetch records",
                 "details": str(e)
@@ -48,10 +49,10 @@ def records_list(request):
                 "data": serializer.data
             }, status=status.HTTP_201_CREATED)
 
-        except Exception as e:
+        except ValidationError as e:   # 🔥 specific error
             return Response({
                 "error": "Failed to create record",
-                "details": str(e)
+                "details": e.detail
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -92,15 +93,16 @@ def record_detail(request, pk):
                 "data": serializer.data
             })
 
-        except Exception as e:
+        except ValidationError as e:   # 🔥 specific error
             return Response({
                 "error": "Update failed",
-                "details": str(e)
+                "details": e.detail
             }, status=status.HTTP_400_BAD_REQUEST)
 
-    # DELETE
+    # DELETE (Soft Delete)
     if request.method == 'DELETE':
-        record.delete()
+        record.is_deleted = True
+        record.save()
         return Response({
             "message": "Record deleted successfully"
         }, status=status.HTTP_204_NO_CONTENT)

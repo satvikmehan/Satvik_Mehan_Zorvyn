@@ -72,3 +72,15 @@ def get_filtered_records(user, request):
         queryset = queryset.filter(type=type_)
 
     return queryset
+
+
+def get_recent_activity(user, request):
+    records = get_filtered_records(user, request)
+
+    data = (
+        records
+        .order_by('-date')[:5]
+        .values('id', 'amount', 'type', 'category', 'date')
+    )
+
+    return list(data).order_by('-date', '-id')

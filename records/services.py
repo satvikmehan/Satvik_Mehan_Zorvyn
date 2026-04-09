@@ -1,7 +1,7 @@
 from .models import Record
 
 def get_filtered_records(user, request):
-    queryset = Record.objects.filter(user=user).select_related('user')
+    queryset = Record.objects.filter(user=user, is_deleted=False)
 
     category = request.GET.get('category')
     type_ = request.GET.get('type')

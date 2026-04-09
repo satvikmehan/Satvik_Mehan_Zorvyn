@@ -19,6 +19,8 @@ class Record(models.Model):
     date = models.DateField(default=timezone.now)
     notes = models.TextField(blank=True, null=True)
 
+    is_deleted = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.type} - {self.amount}"
 
